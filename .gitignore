@@ -3,8 +3,13 @@ node_modules/
 out/
 build/
 *.log
+.env
 .env*.local
 .DS_Store
 .vscode/
 .idea/
 next-env.d.ts.bak
+*.tsbuildinfo
+
+# Terminal Paste Image folder
+.cp-images/

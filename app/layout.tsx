@@ -20,6 +20,7 @@ export default function RootLayout({
             <Link href="/" data-testid="nav-home">Home</Link>
             <Link href="/about" data-testid="nav-about">About</Link>
             <Link href="/counter" data-testid="nav-counter">Counter</Link>
+            <Link href="/config" data-testid="nav-config">Config</Link>
           </nav>
         </header>
         <main className="site-main">{children}</main>
