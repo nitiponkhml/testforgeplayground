@@ -72,3 +72,23 @@ button:hover { border-color: var(--accent); color: var(--accent); }
 }
 
 .counter-controls { display: flex; gap: 0.5rem; }
+
+.item-form { display: flex; gap: 0.5rem; margin: 1rem 0; }
+.item-form input {
+  font: inherit;
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.item-status { color: var(--muted); font-size: 0.9rem; min-height: 1.25rem; }
+.item-list { list-style: none; padding: 0; margin: 0; }
+.item-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.item-title { flex: 1; }
+.item-title.done { text-decoration: line-through; color: var(--muted); }
