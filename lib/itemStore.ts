@@ -1,5 +1,8 @@
-// In-memory store for CRUD items. Resets on server restart — fine for a
-// testsuite fixture. Not persistent and not concurrency-safe by design.
+// Item data access, backed by Postgres (see lib/db.ts).
+// All functions run server-side only and are awaited by route handlers.
+// The table is created/seeded by scripts/migrate.js — not here.
+
+import { query } from "./db";
 
 export type Item = {
   id: number;
@@ -17,46 +20,46 @@ type UpdateInput = {
   done?: boolean;
 };
 
-let nextId = 1;
-const items = new Map<number, Item>();
-
-// Seed a couple of rows so list/read tests have data on a fresh start.
-function seed(): void {
-  if (items.size > 0) return;
-  for (const title of ["First item", "Second item"]) {
-    const id = nextId++;
-    items.set(id, { id, title, done: false });
-  }
-}
-seed();
-
-export function list(): Item[] {
-  return [...items.values()].sort((a, b) => a.id - b.id);
+export async function list(): Promise<Item[]> {
+  const { rows } = await query<Item>(
+    "SELECT id, title, done FROM items ORDER BY id",
+  );
+  return rows;
 }
 
-export function get(id: number): Item | undefined {
-  return items.get(id);
+export async function get(id: number): Promise<Item | undefined> {
+  const { rows } = await query<Item>(
+    "SELECT id, title, done FROM items WHERE id = $1",
+    [id],
+  );
+  return rows[0];
 }
 
-export function create(input: CreateInput): Item {
-  const id = nextId++;
-  const item: Item = { id, title: input.title, done: input.done ?? false };
-  items.set(id, item);
-  return item;
+export async function create(input: CreateInput): Promise<Item> {
+  const { rows } = await query<Item>(
+    "INSERT INTO items (title, done) VALUES ($1, $2) RETURNING id, title, done",
+    [input.title, input.done ?? false],
+  );
+  return rows[0];
 }
 
-export function update(id: number, input: UpdateInput): Item | undefined {
-  const existing = items.get(id);
-  if (!existing) return undefined;
-  const updated: Item = {
-    ...existing,
-    ...(input.title !== undefined ? { title: input.title } : {}),
-    ...(input.done !== undefined ? { done: input.done } : {}),
-  };
-  items.set(id, updated);
-  return updated;
+export async function update(
+  id: number,
+  input: UpdateInput,
+): Promise<Item | undefined> {
+  // COALESCE keeps the existing column when the field is not provided (null).
+  const { rows } = await query<Item>(
+    `UPDATE items
+        SET title = COALESCE($2, title),
+            done  = COALESCE($3, done)
+      WHERE id = $1
+      RETURNING id, title, done`,
+    [id, input.title ?? null, input.done ?? null],
+  );
+  return rows[0];
 }
 
-export function remove(id: number): boolean {
-  return items.delete(id);
+export async function remove(id: number): Promise<boolean> {
+  const { rowCount } = await query("DELETE FROM items WHERE id = $1", [id]);
+  return (rowCount ?? 0) > 0;
 }

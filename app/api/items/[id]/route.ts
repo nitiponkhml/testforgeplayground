@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { get, remove, update } from "@/lib/itemStore";
 import { logError, logRequest } from "@/lib/logger";
 
+// Never execute at build time — this route hits Postgres on each request.
+export const dynamic = "force-dynamic";
+
 type Params = { params: { id: string } };
 
 function parseId(raw: string): number | null {
@@ -18,13 +21,18 @@ export async function GET(_request: NextRequest, { params }: Params) {
     logRequest("GET", path, 400, startedAt, "bad id");
     return NextResponse.json({ error: "Invalid id" }, { status: 400 });
   }
-  const item = get(id);
-  if (!item) {
-    logRequest("GET", path, 404, startedAt, "not found");
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  try {
+    const item = await get(id);
+    if (!item) {
+      logRequest("GET", path, 404, startedAt, "not found");
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+    logRequest("GET", path, 200, startedAt);
+    return NextResponse.json({ item });
+  } catch (error) {
+    logError(`GET ${path}`, error);
+    return NextResponse.json({ error: "Internal error" }, { status: 500 });
   }
-  logRequest("GET", path, 200, startedAt);
-  return NextResponse.json({ item });
 }
 
 // PATCH /api/items/:id — update title and/or done
@@ -45,7 +53,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
         { status: 400 },
       );
     }
-    const item = update(id, { title: body.title, done: body.done });
+    const item = await update(id, { title: body.title, done: body.done });
     if (!item) {
       logRequest("PATCH", path, 404, startedAt, "not found");
       return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -67,11 +75,16 @@ export async function DELETE(_request: NextRequest, { params }: Params) {
     logRequest("DELETE", path, 400, startedAt, "bad id");
     return NextResponse.json({ error: "Invalid id" }, { status: 400 });
   }
-  const removed = remove(id);
-  if (!removed) {
-    logRequest("DELETE", path, 404, startedAt, "not found");
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  try {
+    const removed = await remove(id);
+    if (!removed) {
+      logRequest("DELETE", path, 404, startedAt, "not found");
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+    logRequest("DELETE", path, 200, startedAt, `deleted #${id}`);
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    logError(`DELETE ${path}`, error);
+    return NextResponse.json({ error: "Internal error" }, { status: 500 });
   }
-  logRequest("DELETE", path, 200, startedAt, `deleted #${id}`);
-  return NextResponse.json({ ok: true });
 }
