@@ -45,7 +45,14 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     return NextResponse.json({ error: "Invalid id" }, { status: 400 });
   }
   try {
-    const body = (await request.json().catch(() => null)) ?? {};
+    const body = await request.json().catch(() => null);
+    if (!body || (body.title === undefined && body.done === undefined)) {
+      logRequest("PATCH", path, 400, startedAt, "no fields");
+      return NextResponse.json(
+        { error: "Provide `title` and/or `done`" },
+        { status: 400 },
+      );
+    }
     const item = await update(id, { title: body.title, done: body.done });
     if (!item) {
       logRequest("PATCH", path, 404, startedAt, "not found");
