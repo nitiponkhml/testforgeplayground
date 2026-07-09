@@ -54,7 +54,7 @@ export async function update(
             done  = COALESCE($3, done)
       WHERE id = $1
       RETURNING id, title, done`,
-    [id, input.title ?? null, input.done ?? null],
+    [id, input.title ?? null, input.done || null],
   );
   return rows[0];
 }
