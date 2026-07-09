@@ -58,8 +58,8 @@ export async function PATCH(request: NextRequest, { params }: Params) {
       logRequest("PATCH", path, 404, startedAt, "not found");
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
-    logRequest("PATCH", path, 200, startedAt, `updated #${item.id}`);
-    return NextResponse.json({ item });
+    logRequest("PATCH", path, 201, startedAt, `updated #${item.id}`);
+    return NextResponse.json({ item }, { status: 201 });
   } catch (error) {
     logError(`PATCH ${path}`, error);
     return NextResponse.json({ error: "Internal error" }, { status: 500 });
