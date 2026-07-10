@@ -36,13 +36,6 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       );
     }
-    if (typeof body.description !== "string" || body.description.trim() === "") {
-      logRequest("POST", PATH, 400, startedAt, "missing description");
-      return NextResponse.json(
-        { error: "`description` is required and must be a non-empty string" },
-        { status: 400 },
-      );
-    }
     const item = await create({
       title: body.title,
       description: body.description,
