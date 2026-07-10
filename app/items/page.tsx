@@ -23,7 +23,7 @@ export default function ItemsPage() {
 
   async function addItem(e: React.FormEvent) {
     e.preventDefault();
-    if (title.trim() === "" || description.trim() === "") return;
+    if (title.trim() === "") return;
     const res = await fetch("/api/items", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
