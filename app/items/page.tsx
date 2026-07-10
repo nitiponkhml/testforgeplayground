@@ -69,6 +69,7 @@ export default function ItemsPage() {
           required
           data-testid="item-input"
         />
+        {/* TODO: description input temporarily removed from the create form
         <input
           type="text"
           value={description}
@@ -77,6 +78,7 @@ export default function ItemsPage() {
           required
           data-testid="item-description-input"
         />
+        */}
         <button type="submit" data-testid="item-add">
           Add
         </button>
