@@ -23,7 +23,7 @@ export default function ItemsPage() {
 
   async function addItem(e: React.FormEvent) {
     e.preventDefault();
-    if (title.trim() === "") return;
+    if (title.trim() === "" || description.trim() === "") return;
     const res = await fetch("/api/items", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -66,13 +66,15 @@ export default function ItemsPage() {
           value={title}
           placeholder="New item title"
           onChange={(e) => setTitle(e.target.value)}
+          required
           data-testid="item-input"
         />
         <input
           type="text"
           value={description}
-          placeholder="Description (optional)"
+          placeholder="Description"
           onChange={(e) => setDescription(e.target.value)}
+          required
           data-testid="item-description-input"
         />
         <button type="submit" data-testid="item-add">
