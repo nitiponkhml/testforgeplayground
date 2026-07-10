@@ -23,7 +23,7 @@ export default function ItemsPage() {
 
   async function addItem(e: React.FormEvent) {
     e.preventDefault();
-    if (title.trim() === "" || description.trim() === "") return;
+    if (title.trim() === "") return;
     const res = await fetch("/api/items", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -69,6 +69,7 @@ export default function ItemsPage() {
           required
           data-testid="item-input"
         />
+        {/* TODO: description input temporarily removed from the create form
         <input
           type="text"
           value={description}
@@ -77,6 +78,7 @@ export default function ItemsPage() {
           required
           data-testid="item-description-input"
         />
+        */}
         <button type="submit" data-testid="item-add">
           Add
         </button>
