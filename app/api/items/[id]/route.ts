@@ -46,14 +46,23 @@ export async function PATCH(request: NextRequest, { params }: Params) {
   }
   try {
     const body = await request.json().catch(() => null);
-    if (!body || (body.title === undefined && body.done === undefined)) {
+    if (
+      !body ||
+      (body.title === undefined &&
+        body.description === undefined &&
+        body.done === undefined)
+    ) {
       logRequest("PATCH", path, 400, startedAt, "no fields");
       return NextResponse.json(
-        { error: "Provide `title` and/or `done`" },
+        { error: "Provide `title`, `description`, and/or `done`" },
         { status: 400 },
       );
     }
-    const item = await update(id, { title: body.title, done: body.done });
+    const item = await update(id, {
+      title: body.title,
+      description: body.description,
+      done: body.done,
+    });
     if (!item) {
       logRequest("PATCH", path, 404, startedAt, "not found");
       return NextResponse.json({ error: "Not found" }, { status: 404 });

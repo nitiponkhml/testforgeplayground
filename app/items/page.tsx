@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 
-type Item = { id: number; title: string; done: boolean };
+type Item = { id: number; title: string; description: string; done: boolean };
 
 export default function ItemsPage() {
   const [items, setItems] = useState<Item[]>([]);
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [status, setStatus] = useState("");
 
   async function refresh() {
@@ -26,10 +27,11 @@ export default function ItemsPage() {
     const res = await fetch("/api/items", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title }),
+      body: JSON.stringify({ title, description }),
     });
     setStatus(`POST /api/items → ${res.status}`);
     setTitle("");
+    setDescription("");
     await refresh();
   }
 
@@ -66,6 +68,13 @@ export default function ItemsPage() {
           onChange={(e) => setTitle(e.target.value)}
           data-testid="item-input"
         />
+        <input
+          type="text"
+          value={description}
+          placeholder="Description (optional)"
+          onChange={(e) => setDescription(e.target.value)}
+          data-testid="item-description-input"
+        />
         <button type="submit" data-testid="item-add">
           Add
         </button>
@@ -90,6 +99,14 @@ export default function ItemsPage() {
             >
               {item.title}
             </span>
+            {item.description ? (
+              <span
+                className="item-description"
+                data-testid={`item-description-${item.id}`}
+              >
+                {item.description}
+              </span>
+            ) : null}
             <button
               type="button"
               onClick={() => remove(item)}

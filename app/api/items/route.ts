@@ -36,7 +36,11 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       );
     }
-    const item = await create({ title: body.title, done: body.done });
+    const item = await create({
+      title: body.title,
+      description: body.description,
+      done: body.done,
+    });
     logRequest("POST", PATH, 201, startedAt, `created #${item.id}`);
     return NextResponse.json({ item }, { status: 201 });
   } catch (error) {
