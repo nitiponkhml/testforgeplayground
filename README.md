@@ -1,6 +1,6 @@
 # TestForge Playground
 
-A minimal Next.js 14 app used as a fixture for testsuite experiments.
+A minimal Next.js 14 app used as a fixture for testsuite and CI/CD experiments.
 
 ## Routes
 
