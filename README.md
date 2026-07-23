@@ -21,6 +21,16 @@ npm run dev
 
 App runs on http://localhost:3000.
 
+## Scripts
+
+| Command           | Description                          |
+| ----------------- | ------------------------------------ |
+| `npm run dev`     | Start the dev server                 |
+| `npm run build`   | Production build                     |
+| `npm run serve`   | Serve the production build           |
+| `npm run lint`    | Run ESLint                           |
+| `npm run migrate` | Create/seed the Postgres items table |
+
 ## Test selectors
 
 Every page and interactive element exposes a `data-testid` attribute for stable targeting:

@@ -1,0 +1,15 @@
+name: Test CI Pipeline
+
+on:
+  push:
+    branches: [ "main", "master" ] # ทำงานเมื่อ push ลง main หรือ master
+
+jobs:
+  test-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Print Message
+        run: echo "CI/CD Working! Code successfully pushed."
